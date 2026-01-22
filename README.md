@@ -153,3 +153,118 @@ This documentation is extracted from the official Acumatica documentation. Pleas
 
 *This repository is maintained to provide free, accessible, and AI-friendly documentation for the Acumatica development community. Specially optimized for indexing and crawling by AI tools like Cursor.*
 
+<!-- REPO_MAP:START -->
+## Repo Map (Auto-generated)
+
+### TL;DR
+- What it is: Comprehensive Acumatica ERP documentation in Markdown format (2023R1)
+- Main Acumatica areas: AP, AR, CA, CM, CR, CS, CT, DR, EP, FA, GL, IN, PM, PO, PR, SO, TX, XX (18 modules)
+- Main integrations: Salesforce, Stripe, Bank of America, OAuth/OpenID, RabbitMQ, SFTP
+- Where to look first (files):
+  - `EndUserGuides/AcumaticaERP_CustomizationGuide/` - Customization patterns
+  - `DeveloperGuides/AcumaticaERP_WorkflowAPI/` - Workflow configuration
+  - `DeveloperGuides/AcumaticaERP_IntegrationDevelopmentGuide/` - Integration development
+  - `EndUserGuides/AcumaticaERP_FrameworkDevelopmentGuide/` - Framework patterns
+  - `DeveloperGuides/AcumaticaERP_PluginDevelopmentGuide/` - Commerce connectors
+
+### Affected areas
+- Screens: 500+ screens (AM, AP, AR, CA, CM, CR, CS, DR, EP, FA, GL, IN, PM, PO, PR, SM, SO, TX series)
+- Modules: AP, AR, CA, CM, CR, CS, CT, DR, EP, FA, GL, IN, PM, PO, PR, SO, TX, XX
+- Graph extensions: ARPaymentEntry_Extension, BaseBLCExtension, BaseBLCExtensionOnExtension, BaseBLCMultiExtensionOnExtension, CaseWorkflow_Extension, RSSVWorkOrderEntry_Workflow, SOInvoiceEntry_Extension
+- DAC extensions: BaseDACExtension, BaseDACExtensionOnExtension, BaseDACAdvMultiExtensionOnExtension, BaseDACMultiExtensionOnExtension, FeaturesSetExt, RSSVWorkOrder_Extension
+- DB changes: true (documented examples)
+
+### Notable code snippets
+
+**Multi-Level Graph Extension (Extension-on-Extension)**
+Layered BLC customization with access to base graph and all extension levels.
+
+File: `EndUserGuides/AcumaticaERP_CustomizationGuide/AcumaticaERP_CustomizationGuide.md`
+
+```csharp
+public class BaseBLCMultiExtensionOnExtension :
+    PXGraphExtension<BaseBLCExtensionOnExtension, BaseBLC>
+{
+    public void SomeMethod()
+    {
+        BaseBLC BLC = Base;
+        BaseBLCExtensionOnExtension prevExt = Base1;
+    }
+}
+```
+
+**Advanced DAC Extension Chain**
+Full access to all levels in a 3-level DAC extension chain.
+
+File: `EndUserGuides/AcumaticaERP_CustomizationGuide/AcumaticaERP_CustomizationGuide.md`
+
+```csharp
+public sealed class BaseDACAdvMultiExtensionOnExtension : 
+    PXCacheExtension<BaseDACExtensionOnExtension, BaseDACExtension, BaseDAC>
+{
+    public static void SomeMethod(BaseDACAdvMultiExtensionOnExtension ext4)
+    {
+        BaseDAC dac = ext4.Base;
+        BaseDACExtension dacExt = ext4.Base1;
+        BaseDACExtensionOnExtension dacExtOnExt = ext4.Base2;
+    }
+}
+```
+
+**PXOverride Pattern for Method Interception**
+Delegate-based override pattern for intercepting base graph methods.
+
+File: `EndUserGuides/AcumaticaERP_CustomizationGuide/AcumaticaERP_CustomizationGuide.md`
+
+```csharp
+public class BaseBLC_Extension : PXGraphExtension<BaseBLC>
+{
+    [PXOverride]
+    public bool PrePersist(Func<bool> base_PrePersist)
+    {
+        if (!base_PrePersist())
+            return false;
+        // Custom logic after base execution
+    }
+}
+```
+
+**Workflow API State Transitions**
+Workflow state machine configuration pattern.
+
+File: `DeveloperGuides/AcumaticaERP_WorkflowAPI/AcumaticaERP_WorkflowAPI.md`
+
+```csharp
+context.AddScreenConfigurationFor(screen => screen
+    .StateIdentifierIs<RSSVWorkOrder.status>()
+    .AddDefaultFlow(flow => flow
+        .WithTransitions(transitions =>
+        {
+            transitions.Add(transition => transition
+                .From(States.New)
+                .To(States.Assigned)
+                .IsTriggeredOn(actionAssign));
+        })
+    )
+);
+```
+
+### How to run locally
+- Clone repository: `git clone <repo-url>`
+- Browse Markdown files with any Markdown viewer/editor
+- Use IDE search to find specific topics
+- Images are embedded in each guide folder
+
+### Build / Package
+- Not applicable - documentation repository only
+- No build artifacts required
+
+### Notes / Gotchas
+- Files are very large (some guides exceed 2MB) - use search rather than reading sequentially
+- Images referenced as `_page_X_Picture_Y.jpeg` within each guide folder
+- Metadata files (`*_meta.json`) provide additional context for each guide
+- Documentation covers version 2023R1 but README mentions 2025 R1
+- Code examples are illustrative patterns, not runnable customization projects
+- AWS services mentioned in context of deployment/hosting documentation
+
+<!-- REPO_MAP:END -->
