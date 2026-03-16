@@ -2,11 +2,11 @@ name: Repo docs automation
 
 on:
   pull_request:
-    types: [opened, synchronize, ready_for_review, closed]
+    types: [closed]
 
 jobs:
   detect:
-    if: github.event.pull_request.merged == true || github.event.action != 'closed'
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
@@ -24,24 +24,9 @@ jobs:
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           fi
 
-  generate_docs:
-    needs: detect
-    if: |
-      needs.detect.outputs.should_run == 'true' &&
-      github.event.action != 'closed' &&
-      !github.event.pull_request.draft &&
-      github.actor != 'heuristyc-docs-bot[bot]' &&
-      !startsWith(github.event.pull_request.title, 'AUTOMATION: Cascade Merge')
-    uses: GitHeuristyc/repo-map/.github/workflows/repomap-docs.yml@main
-    with:
-      tools_ref: "main"
-      target_branch: ${{ github.event.pull_request.head.ref }}
-      dispatch_macrorepo: false
-    secrets: inherit
-
   dispatch_macrorepo:
     needs: detect
-    if: needs.detect.outputs.should_run == 'true' && github.event.pull_request.merged == true
+    if: needs.detect.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/create-github-app-token@v2
